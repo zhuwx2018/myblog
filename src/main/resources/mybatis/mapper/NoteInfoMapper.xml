@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mybatisex.myblog.mapper.NoteInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.mybatisex.myblog.domain.NoteInfo" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="module_id" property="moduleId" jdbcType="INTEGER" />
+    <result column="up_id" property="upId" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="CHAR" />
+    <result column="time" property="time" jdbcType="TIMESTAMP" />
+    <result column="user_name" property="userName" jdbcType="CHAR" />
+    <result column="times" property="times" jdbcType="INTEGER" />
+    <result column="cont" property="cont" jdbcType="LONGVARCHAR" />
+  </resultMap>
+</mapper>

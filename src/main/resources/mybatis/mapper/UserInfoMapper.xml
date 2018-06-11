@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mybatisex.myblog.mapper.UserInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.mybatisex.myblog.domain.UserInfo" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="user_name" property="userName" jdbcType="CHAR" />
+    <result column="user_pw" property="userPw" jdbcType="CHAR" />
+    <result column="register" property="register" jdbcType="TIMESTAMP" />
+    <result column="lastlogin" property="lastlogin" jdbcType="TIMESTAMP" />
+  </resultMap>
+</mapper>
