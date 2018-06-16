@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mybatisex.myblog.mapper.SysaclMapper" >
+  <resultMap id="BaseResultMap" type="com.mybatisex.myblog.domain.Sysacl" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="aclid" property="aclid" jdbcType="INTEGER" />
+    <result column="roleid" property="roleid" jdbcType="INTEGER" />
+    <result column="functionid" property="functionid" jdbcType="VARCHAR" />
+    <result column="checktype" property="checktype" jdbcType="VARCHAR" />
+  </resultMap>
+</mapper>

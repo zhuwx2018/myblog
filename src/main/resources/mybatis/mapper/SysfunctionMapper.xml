@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mybatisex.myblog.mapper.SysfunctionMapper" >
+  <resultMap id="BaseResultMap" type="com.mybatisex.myblog.domain.Sysfunction" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="FUNCTIONID" property="functionid" jdbcType="VARCHAR" />
+    <result column="LOCATION" property="location" jdbcType="VARCHAR" />
+    <result column="TITLE" property="title" jdbcType="VARCHAR" />
+    <result column="PARENT" property="parent" jdbcType="VARCHAR" />
+    <result column="ORDERNO" property="orderno" jdbcType="INTEGER" />
+    <result column="TYPE" property="type" jdbcType="VARCHAR" />
+    <result column="DESCRIPTION" property="description" jdbcType="VARCHAR" />
+    <result column="LOG" property="log" jdbcType="VARCHAR" />
+    <result column="OWNER" property="owner" jdbcType="VARCHAR" />
+    <result column="SUBSYSTEM" property="subsystem" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <resultMap id="menuMap" type="com.mybatisex.myblog.view.Menu">
+    <id column="FUNCTIONID" property="menuId" jdbcType="VARCHAR" />
+    <result column="LOCATION" property="url" jdbcType="VARCHAR" />
+    <result column="TITLE" property="title" jdbcType="VARCHAR" />
+    <result column="ORDERNO" property="order" jdbcType="INTEGER" />
+    <result column="TYPE" property="type" jdbcType="VARCHAR" />
+    <result column="PARENT" property="parent" jdbcType="VARCHAR"  />
+    <collection property="children" column="FUNCTIONID" select="findByParent" ofType="com.mybatisex.myblog.view.Menu"></collection>
+  </resultMap>
+
+  <select id="selectRootMenu" resultMap="BaseResultMap">
+    SELECT * FROM sysfunction WHERE parent is null
+  </select>
+  <select id="findByParent" parameterType="String" resultMap="menuMap">
+    SELECT * FROM sysfunction WHERE parent = #{menuId}
+  </select>
+</mapper>

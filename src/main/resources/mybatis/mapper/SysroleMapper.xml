@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mybatisex.myblog.mapper.SysroleMapper" >
+  <resultMap id="BaseResultMap" type="com.mybatisex.myblog.domain.Sysrole" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="roleid" property="roleid" jdbcType="INTEGER" />
+    <result column="roledesc" property="roledesc" jdbcType="VARCHAR" />
+    <result column="parent" property="parent" jdbcType="INTEGER" />
+    <result column="creator" property="creator" jdbcType="VARCHAR" />
+  </resultMap>
+</mapper>
