@@ -24,13 +24,40 @@
     <result column="ORDERNO" property="order" jdbcType="INTEGER" />
     <result column="TYPE" property="type" jdbcType="VARCHAR" />
     <result column="PARENT" property="parent" jdbcType="VARCHAR"  />
-    <collection property="children" column="FUNCTIONID" select="findByParent" ofType="com.mybatisex.myblog.view.Menu"></collection>
+    <collection property="children"  column="{menuId=FUNCTIONID,userId=userid}" select="findByParent" ofType="com.mybatisex.myblog.view.Menu"></collection>
   </resultMap>
+  <sql id="All_Column_List" >
+    functionid,location,title,parent,orderno,type,description,log,owner,subsystem
+  </sql>
 
   <select id="selectRootMenu" resultMap="BaseResultMap">
-    SELECT * FROM sysfunction WHERE parent is null
+    SELECT
+    c.*
+    FROM sysact a,sysacl b,sysfunction c
+    <where>
+      a.roleid = b.roleid
+      and parent is NULL
+      and userid = 'zhaoshucen'
+      and b.functionid = c.FUNCTIONID
+      <if test="userId!=null">
+        and a.userid = #{userId,jdbcType=CHAR}
+      </if>
+    </where>
   </select>
-  <select id="findByParent" parameterType="String" resultMap="menuMap">
-    SELECT * FROM sysfunction WHERE parent = #{menuId}
+  <select id="findByParent" parameterType="map" resultMap="menuMap">
+    SELECT
+    c.*,a.userid
+    FROM sysact a,sysacl b,sysfunction c
+    <where>
+      a.roleid = b.roleid
+      and userid = 'zhaoshucen'
+      and b.functionid = c.FUNCTIONID
+      <if test="menuId!=null">
+        and c.parent = #{menuId,jdbcType=CHAR}
+      </if>
+      <if test="userId!=null">
+        and a.userid = #{userId,jdbcType=CHAR}
+      </if>
+    </where>
   </select>
 </mapper>

@@ -6,7 +6,7 @@
 <generatorConfiguration>
     <properties resource="application.properties"/>
 
-    <context id="mysql" targetRuntime="MyBatis3">
+    <context id="mysql" targetRuntime="MyBatis3Simple">
         <jdbcConnection driverClass="${spring.datasource.driver-class-name}"
                         connectionURL="${spring.datasource.url}"
                         userId="${spring.datasource.username}"
@@ -21,12 +21,15 @@
         <javaClientGenerator targetPackage="com.mybatisex.myblog.mapper" targetProject="src/main/java"
                              type="XMLMAPPER"/>
 
-        <table tableName="manage_user_info">
+        <table tableName="sysuser">
             <!--mysql 配置-->
             <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
             <!--oracle 配置-->
             <!--<generatedKey column="id" sqlStatement="select SEQ_{1}.nextval from dual" identity="false" type="pre"/>-->
         </table>
+        <table tableName="sysrole"></table>
+        <table tableName="sysacl"></table>
+        <table tableName="sysact"></table>
 
     </context>
 </generatorConfiguration>

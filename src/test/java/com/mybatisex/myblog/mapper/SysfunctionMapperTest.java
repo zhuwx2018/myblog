@@ -11,7 +11,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author: zhugf
@@ -33,7 +35,10 @@ public class SysfunctionMapperTest {
             menu.setOrder(sysfunction.getOrderno());
             String menuID = sysfunction.getFunctionid();
             menu.setMenuId(menuID);
-            menu.setChildren(sysfunctionMapper.findByParent(menuID));
+            Map<String,Object> params = new HashMap<>();
+            params.put("userId","szadmin");
+            params.put("menuId",menuID);
+            menu.setChildren(sysfunctionMapper.findByParent(params));
             menus.add(menu);
         }
         String jsonStr = JSONObject.toJSONString(menus);

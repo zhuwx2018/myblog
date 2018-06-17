@@ -1,5 +1,9 @@
 package com.mybatisex.myblog.mapper;
 
+import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.mybatisex.myblog.domain.Sysuser;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +22,9 @@ public class SysUserMapperTest {
     private SysuserMapper sysuserMapper;
     @Test
     public void selectTest(){
-        sysuserMapper.selectAll();
+        PageHelper.startPage(0,10);
+        PageInfo<Sysuser> pageInfo = new PageInfo<>(sysuserMapper.selectAll());
+
+        System.out.println(JSONObject.toJSONString(pageInfo));;
     }
 }

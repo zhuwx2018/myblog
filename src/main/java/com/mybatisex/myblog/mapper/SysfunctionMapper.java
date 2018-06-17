@@ -4,6 +4,9 @@ import com.mybatisex.myblog.domain.Sysfunction;
 import com.mybatisex.myblog.domain.SysfunctionExample;
 import com.mybatisex.myblog.util.BaseMapper;
 import java.util.List;
+import java.util.Map;
+
+import com.mybatisex.myblog.view.Menu;
 import org.apache.ibatis.annotations.Param;
 
 public interface SysfunctionMapper extends BaseMapper<Sysfunction> {
@@ -16,4 +19,9 @@ public interface SysfunctionMapper extends BaseMapper<Sysfunction> {
     int updateByExampleSelective(@Param("record") Sysfunction record, @Param("example") SysfunctionExample example);
 
     int updateByExample(@Param("record") Sysfunction record, @Param("example") SysfunctionExample example);
+
+    List<Sysfunction> selectRootMenu();
+
+    List<Menu> findByParent(Map<String,Object> params);
+
 }

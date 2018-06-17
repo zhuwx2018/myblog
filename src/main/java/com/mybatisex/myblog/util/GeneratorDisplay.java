@@ -19,7 +19,7 @@ public class GeneratorDisplay {
     public void generator() throws Exception {
         List<String> warnings = new ArrayList<String>();
         boolean overwrite = true;
-        File configFile = new File("E:\\cord\\springboot\\myblog\\src\\main\\resources\\generator\\generatorConfig_1.xml");
+        File configFile = new File("E:\\cord\\springboot\\myblog\\src\\main\\resources\\generator\\generatorConfig.xml");
         ConfigurationParser cp = new ConfigurationParser(warnings);
         Configuration config = cp.parseConfiguration(configFile);
         DefaultShellCallback callback = new DefaultShellCallback(overwrite);
