@@ -27,7 +27,7 @@ public class SysfunctionMapperTest {
     SysfunctionMapper sysfunctionMapper;
     @Test
     public void findAll(){
-        List<Sysfunction> list = sysfunctionMapper.selectRootMenu();
+        List<Sysfunction> list = sysfunctionMapper.selectRootMenu("szadmin");
         List<Menu> menus = new ArrayList<>();
         for(Sysfunction sysfunction:list){
             Menu menu = new Menu();

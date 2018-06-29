@@ -20,7 +20,7 @@ public interface SysfunctionMapper extends BaseMapper<Sysfunction> {
 
     int updateByExample(@Param("record") Sysfunction record, @Param("example") SysfunctionExample example);
 
-    List<Sysfunction> selectRootMenu();
+    List<Sysfunction> selectRootMenu(@Param("userId") String userId);
 
     List<Menu> findByParent(Map<String,Object> params);
 

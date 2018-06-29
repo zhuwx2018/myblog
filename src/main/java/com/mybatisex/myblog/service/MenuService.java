@@ -1,6 +1,7 @@
 package com.mybatisex.myblog.service;
 
 import com.mybatisex.myblog.view.Menu;
+import org.springframework.lang.NonNull;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
  * @Date created in 2018/6/16
  */
 public interface MenuService {
-    public List<Menu> initMenu();
-    public List<Menu> initRootMenu();
-    public List<Menu> initChildren(String parentId, String userId);
+    public List<Menu> initMenu(String userId);
+    public List<Menu> initRootMenu(String userId);
+    public List<Menu> initChildren(@NonNull String parentId, String userId);
 }

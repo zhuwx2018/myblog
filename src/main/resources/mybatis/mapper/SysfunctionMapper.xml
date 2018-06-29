@@ -30,19 +30,19 @@
     functionid,location,title,parent,orderno,type,description,log,owner,subsystem
   </sql>
 
-  <select id="selectRootMenu" resultMap="BaseResultMap">
+  <select id="selectRootMenu" parameterType="String" resultMap="BaseResultMap">
     SELECT
     c.*
     FROM sysact a,sysacl b,sysfunction c
     <where>
       a.roleid = b.roleid
       and parent is NULL
-      and userid = 'zhaoshucen'
       and b.functionid = c.FUNCTIONID
       <if test="userId!=null">
         and a.userid = #{userId,jdbcType=CHAR}
       </if>
     </where>
+    ORDER BY c.orderno
   </select>
   <select id="findByParent" parameterType="map" resultMap="menuMap">
     SELECT
@@ -50,7 +50,6 @@
     FROM sysact a,sysacl b,sysfunction c
     <where>
       a.roleid = b.roleid
-      and userid = 'zhaoshucen'
       and b.functionid = c.FUNCTIONID
       <if test="menuId!=null">
         and c.parent = #{menuId,jdbcType=CHAR}
@@ -59,5 +58,6 @@
         and a.userid = #{userId,jdbcType=CHAR}
       </if>
     </where>
+    ORDER BY c.orderno
   </select>
 </mapper>

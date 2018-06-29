@@ -24,19 +24,19 @@ public class MenuServiceImpl implements MenuService{
     @Autowired
     private SysfunctionMapper sysfunctionMapper;
 
-    public List<Menu> initMenu(){
-        List<Menu> rootMenus = initRootMenu();
+    public List<Menu> initMenu(String  userId){
+        List<Menu> rootMenus = initRootMenu(userId);
         if (!ListUtils.isEmpty(rootMenus)){
             for(Menu rootMenu:rootMenus){
-                rootMenu.setChildren(initChildren(rootMenu.getMenuId(),null));
+                rootMenu.setChildren(initChildren(rootMenu.getMenuId(),userId));
             }
         }
         return rootMenus;
     }
 
-    public List<Menu> initRootMenu(){
+    public List<Menu> initRootMenu(String userId){
         List<Menu> list = new ArrayList<>();
-        List<Sysfunction> sysfunctions = sysfunctionMapper.selectRootMenu();
+        List<Sysfunction> sysfunctions = sysfunctionMapper.selectRootMenu(userId);
         for (Sysfunction sysfunction : sysfunctions){
             Menu menu = new Menu();
             BeanUtils.copyProperties(sysfunction,menu);

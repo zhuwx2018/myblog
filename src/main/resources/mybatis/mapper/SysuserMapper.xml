@@ -14,7 +14,7 @@
     <result column="iplist" property="iplist" jdbcType="VARCHAR" />
     <result column="checkip" property="checkip" jdbcType="VARCHAR" />
     <result column="operator" property="operator" jdbcType="VARCHAR" />
-    <result column="operatetime" property="operatetime" jdbcType="VARCHAR" />
+    <result column="operatetime" property="operatetime" jdbcType="DATE" />
     <result column="lockstate" property="lockstate" jdbcType="VARCHAR" />
     <result column="unlocktime" property="unlocktime" jdbcType="VARCHAR" />
     <result column="phone" property="phone" jdbcType="VARCHAR" />

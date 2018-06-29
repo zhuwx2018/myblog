@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" th:src="@{/webjars/vue/2.5.13/vue.js}" ></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet"  th:href="@{/webjars/element-ui/2.4.1/lib/theme-chalk/index.css}">
+    <!-- 引入组件库 -->
+    <script type="text/javascript" th:src="@{/webjars/element-ui/2.4.1/lib/index.js}"></script>
+    <script type="text/javascript" th:src="@{/webjars/vue-resource/1.3.4/dist/vue-resource.js}"></script>
+</head>
+<style>
+    .el-header, .el-footer {
+        background-color: #545c64;
+        color: #333;
+        text-align: center;
+        line-height: 60px;
+    }
+
+    .el-aside {
+        background-color: #D3DCE6;
+        color: #333;
+        height: 900px;
+    }
+
+    .el-main {
+        background-color: #E9EEF3;
+        color: #333;
+    }
+
+    body > .el-container {
+      /*  margin-bottom: 40px;
+      *
+       */
+    }
+
+    .el-container:nth-child(5) .el-aside,
+    .el-container:nth-child(6) .el-aside {
+        line-height: 260px;
+    }
+
+    .el-container:nth-child(7) .el-aside {
+        line-height: 320px;
+    }
+    .el-submenu,.el-menu-item{
+        background-color: rgba(0, 34, 72, 0.82);
+    }
+
+    .el-menu-item.is-active{color: #3d001c;background-color: rgba(3, 1, 2, 0.8);}
+    .el-submenu .is-active div.el-submenu__title:first-child{
+        background-color: rgb(154, 255, 0);
+        color: #281317;
+    }
+    [v-cloak]{
+        display: none;
+        z-index: -1000;
+    }
+    .el-tab-pane{
+        height: 100%;
+    }
+</style>
+<body>
+    <div id="layout" class="layout" v-cloak>
+        <el-container>
+            <el-header>
+                <el-menu :default-active="activeIndex" @open="handleOpenTop" @close="handleCloseTop" @select="handleSelectTop" mode="horizontal" background-color="#545c64" text-color="#fff"  active-text-color="#ffd04b">
+                    <template v-for="item in navMenu">
+                        <el-menu-item :index="item.id">{{item.label}}</el-menu-item>
+                    </template>
+                </el-menu>
+            </el-header>
+            <el-container>
+                <el-aside>
+                    <div id="Aside" th:insert="~{index ::#app}"></div>
+                </el-aside>
+                <el-main>
+                    <div>
+                        <el-tabs v-model="editableTabsValue" type="border-card" closable @tab-remove="removeTab" @tab-click="handleTabsClick">
+                            <el-tab-pane
+                                    v-for="(item, index) in editableTabs"
+                                    :key="item.name"
+                                    :label="item.title"
+                                    :name="item.name"
+                            >
+                                <el-breadcrumb separator="/">
+                                    <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+                                    <el-breadcrumb-item><a href="/">活动管理</a></el-breadcrumb-item>
+                                    <el-breadcrumb-item>活动列表</el-breadcrumb-item>
+                                    <el-breadcrumb-item>活动详情</el-breadcrumb-item>
+                                </el-breadcrumb>
+                                <div v-html="item.content"></div>
+                            </el-tab-pane>
+                        </el-tabs>
+                    </div>
+                </el-main>
+            </el-container>
+        </el-container>
+    </div>
+    <div th:replace="~{index ::#myNav}"></div>
+    <script>
+        var layout = new Vue({
+            el:'#layout',
+            data:function () {
+                return{
+                    navMenu:[],
+                    menu:[],
+                    activeIndex:'',
+                    editableTabs:[],
+                    editableTabsValue:'1',
+                    currentNode:'',
+                    asideActiveIndex:'',
+                }
+            },
+            mounted:function () {
+                var _this = this;
+                _this.$http.get('menu/initNav').then(function (response) {
+                    _this.activeIndex = response.data[0].id;
+                    _this.navMenu = response.data;
+                    _this.initData(response.data[0].id);
+                    _this.editableTabs = []
+                })
+            },
+            methods:{
+                handleSelect:function (index,indexPath) {
+                    // 获取当前选中的菜单
+                    var _this = this;
+                    var temp_list = _this.menu;
+                    indexPath.forEach(function (item) {
+                        _this.currentNode = _this.findChildren(temp_list,item);
+                        if(item!==index){
+                            temp_list = _this.currentNode.children;
+                        }
+                    })
+
+                    // 根据currentNode生成Tab
+                    this.addTab();
+
+                },
+                handleOpen:function (index,indexPath) {
+                    console.info(index,indexPath);
+                },
+                handleClose:function (index,indexPath) {
+                    console.info(index,indexPath);
+                },
+                handleSelectTop:function (index,indexPath) {
+                    this.initData(index);
+                },
+                handleOpenTop:function (index,indexPath) {
+                    console.info(index,indexPath);
+                },
+                handleCloseTop:function (index,indexPath) {
+                    console.info(index,indexPath);
+                },
+                initData:function (index) {
+                    var _this = this;
+                    this.$http.get("menu/initChildren/"+index).then(function(res){
+                        _this.menu = res.data;
+                    });
+                },
+                addTab:function () {
+                    var isContain = false;
+                    var _this = this;
+                    this.editableTabs.forEach(function (item) {
+                        if(item.name === _this.currentNode.id){
+                            isContain = true;
+                        }
+                    })
+                    if(!isContain){
+                        _this.editableTabs.push({
+                            title: _this.currentNode.label,
+                            name: _this.currentNode.id,
+                            content: '<iframe  src="'+_this.currentNode.url+'" frameborder="0" scrolling="no"  width="100%" height="1000px"></iframe>'
+                        });
+                    }
+                    this.editableTabsValue = this.currentNode.id;
+                },
+                removeTab:function (tabName) {
+                    console.info(this.activeIndex)
+                    var _this = this;
+                    this.editableTabs.forEach(function (item,index) {
+                        if(item.name === tabName){
+                            var nextTab = _this.editableTabs[index-1]||_this.editableTabs[index+1];
+                            if(_this.editableTabsValue === tabName ){
+                                _this.editableTabsValue = nextTab.name;
+                                _this.asideActiveIndex = nextTab.name;
+                            }
+                            _this.editableTabs.splice(index,1);
+                        }
+                    })
+                },
+                findChildren:function (children,index) {
+                    var _res = '';
+                    children.forEach(function (child) {
+                        if(child.id === index){
+                           _res = child;
+                        }
+                    });
+                    return _res;
+                },
+                handleTabsClick:function (tab) {
+                    this.asideActiveIndex = tab.name;
+                    console.info(tab.name);
+                }
+
+            },
+            components:{
+                "tree-menu":{
+                    template:"#myNav",
+                    name:"tree-menu",
+                    props:['children']
+                }
+            },
+        });
+
+
+    </script>
+</body>
+</html>

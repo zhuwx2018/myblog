@@ -15,7 +15,6 @@ public class UserController {
     public Object login(@RequestBody UserTemp temp){
         System.out.println(temp);
         System.out.println("访问成功");
-
         return "hello";
     }
 }
