@@ -16,4 +16,8 @@ public class SysRouter {
     public String userManager(){
         return "sysmanager/userManager";
     }
+    @GetMapping("changePw")
+    public String changePw(){
+        return "sysmanager/changePw";
+    }
 }

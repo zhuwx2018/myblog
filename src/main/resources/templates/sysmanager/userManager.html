@@ -23,10 +23,44 @@
     iframe{
         height: 100%;
     }
+    .my-dialog{
+        border-radius: 10px;
+        border: 1px solid #3a8ee6;
+    }
 </style>
 <body>
     <div id="userManager">
-        <el-button>新增</el-button>
+        <el-row>
+            <el-col>
+                <el-card>
+                    <div slot="header" class="clearfix">
+                        <span>查询条件</span>
+                        <el-button style="float: right; padding: 3px 0" type="text" @click="showAddDialog">新增</el-button>
+                    </div>
+                    <el-form :inline="true" ref="searchForm" :model="searchForm" label-width="80px">
+                        <el-form-item label="用户ID" prop="userid">
+                            <el-input v-model="searchForm.userid" placeholder="用户ID" clearable></el-input>
+                        </el-form-item>
+                        <el-form-item label="姓名" prop="operatorname">
+                            <el-input v-model="searchForm.operatorname" placeholder="姓名" clearable></el-input>
+                        </el-form-item>
+                        <el-form-item label="创建时间" prop="createRange">
+                            <el-date-picker
+                                    v-model="searchForm.createRange"
+                                    type="daterange"
+                                    range-separator="至"
+                                    start-placeholder="开始日期"
+                                    end-placeholder="结束日期">
+                            </el-date-picker>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" @click="searchSubmit">查询</el-button>
+                        </el-form-item>
+                    </el-form>
+                </el-card>
+            </el-col>
+        </el-row>
+
         <el-table
                 :data="userData"
                 border
@@ -74,7 +108,7 @@
                     width="120">
                 <template slot-scope="scope">
                     <i class="el-icon-time"></i>
-                    <span style="margin-left: 10px">{{ new Date(scope.row.operatetime) }}</span>
+                    <span style="margin-left: 10px">{{ formatDate(scope.row.operatetime) }}</span>
                 </template>
             </el-table-column>
             <el-table-column
@@ -85,11 +119,11 @@
             <el-table-column
 
                     label="操作"
-                    width="200">
+                    >
                 <template slot-scope="scope">
-                    <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
-                    <el-button type="text" size="small">编辑</el-button>
-                    <el-button type="danger" size="small">删除</el-button>
+                    <el-button @click="handleClick(scope.row)" type="text" size="small" icon="el-icon-edit">编辑</el-button>
+                    <el-button  size="small" >授权</el-button>
+                    <el-button @click="handleDel(scope.row)" type="danger" size="small">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -102,26 +136,145 @@
                 layout="total, sizes, prev, pager, next, jumper"
                 :total="total">
         </el-pagination>
-        <user-dialog :outerVisible="showDialog"></user-dialog>
+        <user-dialog :outer-visible="showDialog" :user-info="currentRow" @cancel="showDialog=false" @edit-reload="loadData"></user-dialog>
+        <!-- 删除提示 -->
+        <el-dialog
+                v-dialog-drag
+                @close="doDel = false"
+                title="删除用户"
+                :modal="false"
+                custom-class="my-dialog"
+                :visible="doDel">
+            <p>删除操作无法撤回，确定要继续删除吗？</p>
+            <div slot="footer" class="dialog-footer">
+                <el-button size="mini" type="text" @click="doDel = false">取消</el-button>
+                <el-button type="primary" size="mini" @click="delRow">确定</el-button>
+            </div>
+            <el-button slot="reference">删除</el-button>
+        </el-dialog>
+        <!-- 新增人员 -->
+        <el-dialog v-dialog-drag custom-class="my-dialog" width="30%" title="新增用户" :visible.sync="newUserVisible">
+            <el-form :model="userAddForm" status-icon ref="userAddForm" label-width="100px" class="demo-ruleForm">
+                <el-form-item label="用户 ID" prop="userid">
+                    <el-input type="text" v-model="userAddForm.userid" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="用户密码" prop="passwd">
+                    <el-input type="password" v-model="userAddForm.passwd" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="确认密码" prop="checkPass">
+                    <el-input type="password" v-model="userAddForm.checkPass" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="用户描述" prop="description">
+                    <el-input type="text" v-model="userAddForm.description" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="手机号码" prop="phone">
+                    <el-input type="text" v-model="userAddForm.phone" auto-complete="off"></el-input>
+                </el-form-item>
+
+                <el-form-item>
+                    <el-button type="primary" @click="submitForm('userAddForm')">提交</el-button>
+                    <el-button @click="resetForm('userAddForm')">重置</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
+
     </div>
 
     <!-- 弹出框组件 -->
     <template id="userDialog">
-        <el-dialog title="外层 Dialog" :visible.sync="outerVisible">
-            <el-dialog
-                    width="30%"
-                    title="内层 Dialog"
-                    :visible.sync="innerVisible"
-                    append-to-body>
-            </el-dialog>
+        <el-dialog v-dialog-drag @close="doCancel" title="用户信息" :visible="outerVisible">
+            <el-form :ref="formData" :form="formData" >
+                <el-form-item label="ID" >
+                    <el-input v-model="formData.userid" :disabled="disable"></el-input>
+                </el-form-item>
+                <el-form-item label="用户名">
+                    <el-input v-model="formData.operatorname"></el-input>
+                </el-form-item>
+                <el-form-item label="描述">
+                    <el-input v-model="formData.description"></el-input>
+                </el-form-item>
+            </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button @click="outerVisible = false">取 消</el-button>
+                <el-button @click="doCancel">取 消</el-button>
                 <el-button type="primary" @click="save">保 存</el-button>
             </div>
         </el-dialog>
     </template>
 
     <script>
+        // v-dialogDrag: 弹窗拖拽
+        Vue.directive('dialogDrag', {
+            bind(el, binding, vnode, oldVnode) {
+                const dialogHeaderEl = el.querySelector('.el-dialog__header');
+                const dragDom = el.querySelector('.el-dialog');
+                dialogHeaderEl.style.cursor = 'move';
+
+                // 获取原有属性 ie dom元素.currentStyle 火狐谷歌 window.getComputedStyle(dom元素, null);
+                const sty = dragDom.currentStyle || window.getComputedStyle(dragDom, null);
+
+                dialogHeaderEl.onmousedown = (e) => {
+                    // 鼠标按下，计算当前元素距离可视区的距离
+                    const disX = e.clientX - dialogHeaderEl.offsetLeft;
+                    const disY = e.clientY - dialogHeaderEl.offsetTop;
+
+                    // 获取到的值带px 正则匹配替换
+                    let styL, styT;
+
+                    // 注意在ie中 第一次获取到的值为组件自带50% 移动之后赋值为px
+                    if(sty.left.includes('%')) {
+                        styL = +document.body.clientWidth * (+sty.left.replace(/\%/g, '') / 100);
+                        styT = +document.body.clientHeight * (+sty.top.replace(/\%/g, '') / 100);
+                    }else {
+                        styL = +sty.left.replace(/\px/g, '');
+                        styT = +sty.top.replace(/\px/g, '');
+                    };
+
+                    document.onmousemove = function (e) {
+                        // 通过事件委托，计算移动的距离
+                        const l = e.clientX - disX;
+                        const t = e.clientY - disY;
+
+                        // 移动当前元素
+                        dragDom.style.left = `${l + styL}px`;
+                        dragDom.style.top = `${t + styT}px`;
+
+                        //将此时的位置传出去
+                        //binding.value({x:e.pageX,y:e.pageY})
+                    };
+
+                    document.onmouseup = function (e) {
+                        document.onmousemove = null;
+                        document.onmouseup = null;
+                    };
+                }
+            }
+        });
+
+        // v-dialogDragWidth: 弹窗宽度拖大 拖小
+        Vue.directive('dialogDragWidth', {
+            bind(el, binding, vnode, oldVnode) {
+                const dragDom = binding.value.$el.querySelector('.el-dialog');
+
+                el.onmousedown = (e) => {
+
+                    // 鼠标按下，计算当前元素距离可视区的距离
+                    const disX = e.clientX - el.offsetLeft;
+
+                    document.onmousemove = function (e) {
+                        e.preventDefault(); // 移动时禁用默认事件
+
+                        // 通过事件委托，计算移动的距离
+                        const l = e.clientX - disX;
+                        dragDom.style.width = `${l}px`;
+                    };
+
+                    document.onmouseup = function (e) {
+                        document.onmousemove = null;
+                        document.onmouseup = null;
+                    };
+                }
+            }
+        })
         var userManager = new Vue({
             el:"#userManager",
             data:function () {
@@ -131,11 +284,51 @@
                     currentPage:1,
                     pageSize:10,
                     showDialog:false,
+                    dataShow:{},
+                    currentRow:{},
+                    doDel:false,
+                    newUserVisible:false,
+                    userAddForm:{
+                        userid:'',
+                        passwd:'',
+                        checkPass:'',
+                        description:'',
+                        phone:'',
+
+                    },
+                    formRules:"",
+                    searchForm:{
+                        userid:null,
+                        operatorname:null,
+                        createRange:[],
+                    }
+
                 }
             },
             methods:{
                 handleClick:function (row) {
                     console.info(row)
+                    console.info('查看')
+                    this.currentRow = {
+                        userid:row.userid,
+                        operatorname:row.operatorname,
+                        description:row.description,
+                    };
+                    this.showDialog = true;
+                },
+                handleDel(row){
+                    this.doDel = true;
+                    this.currentRow = {
+                        userid:row.userid,
+                    }
+                },
+                delRow(){
+                    this.$message({
+                        type:"success",
+                        message:'成功删除'+this.currentRow.userid,
+                    })
+                    this.doDel = false;
+                    this.loadData();
                 },
                 handleSizeChange(val) {
                     this.pageSize = val;
@@ -145,12 +338,58 @@
                     this.currentPage = val;
                     this.loadData();
                 },
-                loadData:function () {
+                loadData:function (val) {
                     var _this = this;
-                    this.$http.get('listUser',{params:{pageSize:this.pageSize,pageNum:this.currentPage}}).then(function (res) {
+                    this.searchForm.createRange = this.searchForm.createRange||[];
+                    this.searchForm.pageNum = this.currentPage;
+                    this.searchForm.pageSize = this.pageSize;
+                    this.searchForm.startTime = this.searchForm.createRange[0];
+                    this.searchForm.endTime = this.searchForm.createRange[1];
+                    this.$http.post('listUser',this.searchForm).then(function (res) {
                         _this.userData = res.data.list;
                         _this.total = res.data.total;
                     })
+                },formatDate(val){
+                    if(val){
+                        var date = new Date(val);
+                        return date.getFullYear()+'-'+date.getMonth()+'-'+date.getDay()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
+                    }
+                    return "";
+                },
+                showAddDialog(){
+                    this.newUserVisible = true;
+                },
+                submitForm:function (val) {
+                    var _this = this;
+                    this.$refs[val].validate((result)=>{
+                        if(result){
+                            this.userAddForm.passwd = this.userAddForm.passwd;
+                            _this.$http.post("new",this.userAddForm).then(function (res) {
+                                if(res.data.status === 0){
+                                    _this.$message({
+                                        type:'success',
+                                        message:'保存成功',
+                                    });
+                                }else {
+                                    _this.$message({
+                                        type:'error',
+                                        message:res.data.msg,
+                                    });
+                                }
+                            })
+                        }else{
+                            _this.$message({
+                                type:"error",
+                                message:"存在错误"
+                            })
+                        }
+                    })
+                },
+                resetForm:function (val) {
+                    this.$refs[val].resetFields();
+                },
+                searchSubmit:function () {
+                    this.loadData();
                 }
 
             },
@@ -161,18 +400,51 @@
                 "userDialog":{
                     template:"#userDialog",
                     name:"userDialog",
-                    props:["outerVisible"],
+                    props:["outerVisible","userInfo"],
                     data:function () {
                         return{
-                            innerVisible:false,
+                            formData:{},
+                            formLabelWidth: '120px',
+                            disable:true,
                         }
                     },
                     methods:{
                         save:function () {
                             console.info("save")
+                            console.info(this.formData);
+                            this.$http.post('update',this.formData).then(function (res) {
+                                console.info(res);
+                                this.$emit('edit-reload');
+                            })
+                            this.$message({
+                                type:'success',
+                                message:"保存成功！"
+                            })
+                            this.$emit('edit-reload');
+                        },
+                        doCancel(){
+                            this.$emit('cancel');
+                        }
+                    },
+                    computed:{
+                        dialogFormData:{
+                            get:function () {
+                                return this.formData = Object.assign({},this.userInfo);
+                            },
+                            set:function (newVal) {
+                                this.formData = newVal;
+                            }
+                        }
+                    },
+                    watch:{
+                        userInfo:{//dialogEditOrAddData得在data中声明
+                            handler(oldVal,newVal){
+                                this.formData = oldVal;
+                            },
+                            deep:true
                         }
                     }
-                }
+                },
             }
 
 

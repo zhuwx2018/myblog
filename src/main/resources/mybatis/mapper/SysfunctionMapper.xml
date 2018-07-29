@@ -44,17 +44,38 @@
     </where>
     ORDER BY c.orderno
   </select>
+  <select id="findRootMenu" parameterType="String" resultMap="BaseResultMap">
+    SELECT
+    c.*
+    FROM sysfunction c
+    <where>
+      parent is NULL
+    </where>
+    ORDER BY c.orderno
+  </select>
   <select id="findByParent" parameterType="map" resultMap="menuMap">
     SELECT
-    c.*,a.userid
-    FROM sysact a,sysacl b,sysfunction c
+    <choose>
+      <when test="userId = 'admin'">
+        c.*,'admin' userid
+        FROM sysfunction c
+      </when>
+      <otherwise>
+        c.*,a.userid
+        FROM sysact a,sysacl b,sysfunction c
+      </otherwise>
+    </choose>
+
     <where>
-      a.roleid = b.roleid
-      and b.functionid = c.FUNCTIONID
+      1 = 1
+      <if test="userId!='admin'">
+        and a.roleid = b.roleid
+        and b.functionid = c.FUNCTIONID
+      </if>
       <if test="menuId!=null">
         and c.parent = #{menuId,jdbcType=CHAR}
       </if>
-      <if test="userId!=null">
+      <if test="userId!=null and userId!='admin'">
         and a.userid = #{userId,jdbcType=CHAR}
       </if>
     </where>

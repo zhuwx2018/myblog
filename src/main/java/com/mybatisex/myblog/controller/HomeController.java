@@ -1,7 +1,11 @@
 package com.mybatisex.myblog.controller;
 
+import com.mybatisex.myblog.service.UserInfoService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
@@ -11,6 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Controller
 public class HomeController {
+    @Autowired
+    private UserInfoService service;
+
+    private String username;
     @GetMapping("/index")
     public String index(){
         return "index";
@@ -24,6 +32,15 @@ public class HomeController {
     public String login(){
         return "login";
     }
+    @GetMapping("/test_login/{time}")
+    public String loginTime(@PathVariable(name = "time") String time) throws InterruptedException {
+        System.out.println(time+":"+username);
+        if(time.equals("stop")){
+            username = "hello world";
 
-
+            Thread.sleep(5000);
+        }
+        System.out.println(time);
+        return "login";
+    }
 }

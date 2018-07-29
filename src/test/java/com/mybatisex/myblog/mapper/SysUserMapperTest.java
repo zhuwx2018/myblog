@@ -1,9 +1,7 @@
 package com.mybatisex.myblog.mapper;
 
-import com.alibaba.fastjson.JSONObject;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
-import com.mybatisex.myblog.domain.Sysuser;
+import com.mybatisex.myblog.domain.SysuserVO;
+import com.mybatisex.myblog.service.SysUserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +20,9 @@ import java.sql.Date;
 public class SysUserMapperTest {
     @Autowired
     private SysuserMapper sysuserMapper;
+    @Autowired
+    private SysUserService sysUserService;
+
     @Test
     public void selectTest(){
 //        PageHelper.startPage(0,10);
@@ -39,5 +40,15 @@ public class SysUserMapperTest {
             sb.append("' and to_date('").append(new Date(new java.util.Date().getTime()).toString()).append(
                     "','yyyy-mm-dd') between d421_04 and d421_05 order by (case when d421_03 = '2' then '1'  when d421_03 = '8' then '1' else '2' end) asc");
         System.out.println(sb.toString());
+    }
+    @Test
+    public void testExample(){
+//        sysUserService.selectSysUserPage(1,10);
+        SysuserVO sysuserVO = new SysuserVO();
+//        sysuserVO.setEndTime(new java.util.Date());
+//        sysuserVO.setStartTime(new java.util.Date());
+//        sysuserVO.setUserid("1");
+        sysuserVO.setOperatorname("程");
+        sysuserMapper.selectByVO(sysuserVO);
     }
 }

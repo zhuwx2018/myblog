@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>修改用户密码</title>
+    <script type="text/javascript" th:src="@{/webjars/vue/2.5.13/vue.js}" ></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet"  th:href="@{/webjars/element-ui/2.4.1/lib/theme-chalk/index.css}">
+    <!-- 引入组件库 -->
+    <script type="text/javascript" th:src="@{/webjars/element-ui/2.4.1/lib/index.js}"></script>
+    <script type="text/javascript" th:src="@{/webjars/vue-resource/1.3.4/dist/vue-resource.js}"></script>
+</head>
+<style>
+    .changPw{
+        width: 50%;
+    }
+</style>
+<body>
+    <div id="changPw">
+        <el-form :model="pwForm" status-icon class="changPw" :rules="rules" ref="pwForm" label-width="100px">
+            <el-form-item label="旧密码" prop="originPw">
+                <el-input type="password" v-model="pwForm.originPw" auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="新密码" prop="pass">
+                <el-input type="password" v-model="pwForm.newPw" auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="确认密码" prop="checkPass">
+                <el-input type="password" v-model="pwForm.checkPass" auto-complete="off"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="submitForm('pwForm')">提交</el-button>
+                <el-button @click="resetForm('pwForm')">重置</el-button>
+            </el-form-item>
+        </el-form>
+    </div>
+    <script>
+        new Vue( {
+            el:"#changPw",
+            data() {
+
+                var validatePass = (rule, value, callback) => {
+                    if (value === '') {
+                        callback(new Error('请输入密码'));
+                    } else {
+                        if (this.pwForm.checkPass !== '') {
+                            this.$refs.pwForm.validateField('checkPass');
+                        }
+                        callback();
+                    }
+                };
+                var validatePass2 = (rule, value, callback) => {
+                    if (value === '') {
+                        callback(new Error('请再次输入密码'));
+                    } else if (value !== this.pwForm.newPw) {
+                        callback(new Error('两次输入密码不一致!'));
+                    } else {
+                        callback();
+                    }
+                };
+                return {
+                    pwForm: {
+                        originPw: '',
+                        newPw: '',
+                        checkPass: ''
+                    },
+                    rules: {
+                        newPw: [
+                            { validator: validatePass, trigger: 'blur' }
+                        ],
+                        checkPass: [
+                            { validator: validatePass2, trigger: 'blur' }
+                        ]
+                    }
+                };
+            },
+            methods: {
+                submitForm(formName) {
+                    this.$refs[formName].validate((valid) => {
+                        if (valid) {
+                            alert('submit!');
+                        } else {
+                            console.log('error submit!!');
+                            return false;
+                        }
+                    });
+                },
+                resetForm(formName) {
+                    this.$refs[formName].resetFields();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

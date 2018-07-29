@@ -5,9 +5,11 @@ import com.mybatisex.myblog.domain.SysfunctionExample;
 import com.mybatisex.myblog.util.BaseMapper;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.mybatisex.myblog.view.Menu;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.cache.annotation.Cacheable;
 
 public interface SysfunctionMapper extends BaseMapper<Sysfunction> {
     int countByExample(SysfunctionExample example);
@@ -20,8 +22,11 @@ public interface SysfunctionMapper extends BaseMapper<Sysfunction> {
 
     int updateByExample(@Param("record") Sysfunction record, @Param("example") SysfunctionExample example);
 
-    List<Sysfunction> selectRootMenu(@Param("userId") String userId);
+    Set<Sysfunction> selectRootMenu(@Param("userId") String userId);
+    
+    Set<Menu> findByParent(Map<String,Object> params);
 
-    List<Menu> findByParent(Map<String,Object> params);
-
+    Set<Menu> selectByParent(Map<String,Object> params);
+    @Cacheable(value = "initMenu",key = "#p0",unless = "#result==null")
+    Set<Sysfunction> findRootMenu(@Param("userId") String userId);
 }

@@ -15,5 +15,5 @@ public interface UserInfoService {
     public void delUser(Integer id);
     public UserInfo update(UserInfo userInfo);
     public UserInfo updateByExample(UserInfo userInfo);
-
+    public UserInfo findUserById(Integer id);
 }

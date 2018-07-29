@@ -10,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Author: zhugf
@@ -27,8 +24,8 @@ public class SysfunctionMapperTest {
     SysfunctionMapper sysfunctionMapper;
     @Test
     public void findAll(){
-        List<Sysfunction> list = sysfunctionMapper.selectRootMenu("szadmin");
-        List<Menu> menus = new ArrayList<>();
+        Set<Sysfunction> list = new HashSet<>(sysfunctionMapper.selectAll());
+        Set<Menu> menus = new HashSet<>();
         for(Sysfunction sysfunction:list){
             Menu menu = new Menu();
             BeanUtils.copyProperties(sysfunction,menu);
@@ -36,12 +33,22 @@ public class SysfunctionMapperTest {
             String menuID = sysfunction.getFunctionid();
             menu.setMenuId(menuID);
             Map<String,Object> params = new HashMap<>();
-            params.put("userId","szadmin");
+            params.put("userId","admin");
             params.put("menuId",menuID);
-            menu.setChildren(sysfunctionMapper.findByParent(params));
+            menu.setChildren(new ArrayList<Menu>(sysfunctionMapper.findByParent(params)));
             menus.add(menu);
         }
-        String jsonStr = JSONObject.toJSONString(menus);
+        List<Menu> listss = new ArrayList<>(menus);
+        Collections.sort(listss);
+        String jsonStr = JSONObject.toJSONString(listss);
         System.out.println(jsonStr);
+    }
+    @Test
+    public void testSet(){
+        Map<String,Object> map = new HashMap<>();
+//        map.put("menuId","");
+//        Set<Menu> menus = sysfunctionMapper.selectByParent(map);
+        Set<Menu> menus = sysfunctionMapper.findByParent(map);
+        System.out.println(menus.size());
     }
 }

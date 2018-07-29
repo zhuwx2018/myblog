@@ -20,14 +20,14 @@ public class MenuController {
 
     @GetMapping("init")
     public Object init(){
-        return menuService.initMenu("szadmin");
+        return menuService.initMenu("admin");
     }
     @GetMapping("initNav")
     public Object initNav(){
-        return menuService.initRootMenu("szadmin");
+        return menuService.initRootMenu("admin");
     }
     @GetMapping("initChildren/{parentId}")
     public Object initChildren(@PathVariable String parentId){
-        return menuService.initChildren(parentId,"szadmin");
+        return menuService.initChildren(parentId,"admin");
     }
 }

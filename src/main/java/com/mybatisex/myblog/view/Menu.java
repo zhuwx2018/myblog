@@ -1,8 +1,10 @@
 package com.mybatisex.myblog.view;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -11,7 +13,8 @@ import java.util.List;
  * @Date created in 2018/6/13
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Menu {
+@JsonIgnoreProperties(value = { "handler" })
+public class Menu implements Comparable<Menu>,Serializable {
     @JSONField(name = "id")
     private String menuId;
     @JSONField(name="label")
@@ -77,5 +80,34 @@ public class Menu {
 
     public void setChildren(List<Menu> children) {
         this.children = children;
+    }
+
+    @Override
+    public int compareTo(Menu o) {
+        if(this.getOrder()>=o.getOrder()){
+            return 1;
+        }else{
+            return -1;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getMenuId().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == this) return true;
+        if(obj instanceof Menu){
+            Menu menu = (Menu) obj;
+            if (menu.getMenuId().equals(this.getMenuId())){
+                return true;
+            }else {
+                return false;
+            }
+        }else {
+            return false;
+        }
     }
 }

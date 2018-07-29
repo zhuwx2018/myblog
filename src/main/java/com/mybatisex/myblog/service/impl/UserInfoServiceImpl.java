@@ -4,6 +4,7 @@ import com.mybatisex.myblog.domain.UserInfo;
 import com.mybatisex.myblog.mapper.UserInfoMapper;
 import com.mybatisex.myblog.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
@@ -44,5 +45,9 @@ public class UserInfoServiceImpl implements UserInfoService {
 
         userInfoMapper.updateByExampleSelective(userInfo,example);
         return userInfo;
+    }
+    @Cacheable(value = "UserInfo",key = "'user_'.concat(#id.toString())")
+    public UserInfo findUserById(Integer id){
+        return userInfoMapper.selectByPrimaryKey(id);
     }
 }
