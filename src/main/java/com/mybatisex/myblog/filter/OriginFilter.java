@@ -31,9 +31,7 @@ public class OriginFilter implements Filter {
         HttpServletResponse res = (HttpServletResponse)response;
         HttpServletRequest req = (HttpServletRequest)request;
         String origin = req.getRequestURL().toString();
-        System.out.println(origin);
-        System.out.println(req.getQueryString());
-        System.out.println(req.getRemoteUser());
+
         res.addHeader("Access-Control-Allow-Methods","*");
         res.addHeader("Access-Control-Max-Age","3600");
         res.addHeader("Access-Control-Allow-Credentials","true");
